@@ -71,4 +71,16 @@ $router->mount('/ark', function () use ($router, $arkController) {
 	});
 });
 
+$router->get('/arks', function () use ($arkController) {
+	$response = $arkController->getArks($_GET);
+
+	if ($response['status'] === "success") {
+		http_response_code(200);
+	}
+	else if ($response['status'] === "failed") {
+		http_response_code(400);
+	}
+	echo json_encode($response);
+});
+
 $router->run();

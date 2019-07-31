@@ -166,4 +166,33 @@ class ArkController
     public function upgradeArk()
     { }
 
+    public function getArks($raw)
+    {
+
+        $user = $this->jwt->decode($raw['token']);
+        $userid = $user['userid'];
+
+        $query = "SELECT * FROM arks WHERE userid = $userid";
+
+        $result = $this->conn->query($query);
+
+        if ($result->num_rows > 0) {
+            $arks = $result->fetch_all(MYSQLI_ASSOC);
+            $response = [
+                "status" => "success",
+                "message" => "OK",
+                "data" => $arks
+            ];
+        }
+        else {
+            $response = [
+                "status" => "failed",
+                "message" => "Failed while fetching Ark machines",
+            ];
+        }
+
+        return $response;
+
+    }
+
 }
