@@ -1,6 +1,25 @@
 <?php
+namespace App\Controllers;
+
+require_once __DIR__ . '/../Helpers/Database.php';
+require_once __DIR__ . '/../Helpers/JWT.php';
+
+use Database;
+use JWT;
+
 class ArkController
 {
+
+    private $conn;
+    private $jwt;
+
+    function __construct() {
+        $db = new Database();
+        $this->conn = $db->getConnection();
+
+        $this->jwt = new JWT();
+    }
+
     /**
      * @OA\Post(
      *     path="/ark/create",
@@ -44,8 +63,36 @@ class ArkController
      *     @OA\Response(response="401", description="Invalid credential") 
      * )
      */
-    public function insertArk()
-    { }
+    public function insertArk($raw)
+    { 
+        $data = json_decode($raw, true);
+
+        $user = $this->jwt->decode($data['token']);
+        $userid = $user['userid'];
+
+        $ark_name = $data['ark_name'];
+        $attack = $data['attack'];
+        $hitpoint = $data['hitpoint'];
+        $skill = $data['skill'];
+
+        $query = "INSERT INTO arks VALUES (DEFAULT, $userid, '$ark_name', $attack, $hitpoint, '$skill');";
+
+        if ($this->conn->query($query) === TRUE) {
+            $response = [
+                "status" => "success",
+                "message" => "OK",
+            ];
+        }
+        else {
+            $response = [
+                "status" => "failed",
+                "message" => "Failed to create new Ark machine",
+                "trace" => $this->conn->error
+            ];
+        }
+
+        return $response;
+    }
 
 
     /**

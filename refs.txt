@@ -1,0 +1,5 @@
+https://github.com/zircote/swagger-php/blob/master/Examples/petstore.swagger.io/controllers/PetController.php
+
+https://medium.com/@loic.boucha/generate-openapi-documentation-for-your-php-api-45f526f3975c
+
+http://zircote.com/swagger-php/
