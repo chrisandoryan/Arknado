@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 require_once __DIR__ . '/../Helpers/Database.php';
@@ -13,7 +14,8 @@ class ArkController
     private $conn;
     private $jwt;
 
-    function __construct() {
+    function __construct()
+    {
         $db = new Database();
         $this->conn = $db->getConnection();
 
@@ -64,7 +66,7 @@ class ArkController
      * )
      */
     public function insertArk($raw)
-    { 
+    {
         $data = json_decode($raw, true);
 
         $user = $this->jwt->decode($data['token']);
@@ -82,8 +84,7 @@ class ArkController
                 "status" => "success",
                 "message" => "OK",
             ];
-        }
-        else {
+        } else {
             $response = [
                 "status" => "failed",
                 "message" => "Failed to create new Ark machine",
@@ -140,9 +141,7 @@ class ArkController
      * )
      * */
     public function uploadBanner()
-    {
-
-    }
+    { }
 
     /**
      * @OA\Get(
@@ -163,8 +162,52 @@ class ArkController
      *     @OA\Response(response="401", description="Invalid credential") 
      * )
      */
-    public function upgradeArk()
-    { }
+    public function upgradeArk($id, $raw)
+    {
+        $arkid = $id;
+
+        $user = $this->jwt->decode($raw['token']);
+        $userid = $user['userid'];
+
+        $query = "SELECT * FROM arks WHERE id = $arkid;";
+
+        $result = $this->conn->query($query);
+        if ($result->num_rows > 0) {
+            $ark = $result->fetch_assoc();
+
+            $upgrade_hp = random_int(500, 1000);
+            $nhp = $ark['hitpoint'] + $upgrade_hp;
+
+            $upgrade_atk = random_int(500, 1000);
+            $natk = $ark['attack'] + $upgrade_atk;
+
+            $query = "UPDATE arks SET hitpoint = $nhp, attack = $natk WHERE id = $arkid;";
+
+            if ($this->conn->query($query) === TRUE) {
+                $response = [
+                    "status" => "success",
+                    "message" => "OK",
+                    "result" => [
+                        "up_hitpoint" => $upgrade_hp,
+                        "up_attack" => $upgrade_atk
+                    ],
+                ];
+            } else {
+                $response = [
+                    "status" => "failed",
+                    "message" => "Failed to upgrade Ark machine",
+                ];
+            }
+        }
+        else {
+            $response = [
+                "status" => "failed",
+                "message" => "Ark machine not found"
+            ];
+        }
+
+        return $response;
+    }
 
     public function getArks($raw)
     {
@@ -183,8 +226,7 @@ class ArkController
                 "message" => "OK",
                 "data" => $arks
             ];
-        }
-        else {
+        } else {
             $response = [
                 "status" => "failed",
                 "message" => "Failed while fetching Ark machines",
@@ -192,7 +234,5 @@ class ArkController
         }
 
         return $response;
-
     }
-
 }

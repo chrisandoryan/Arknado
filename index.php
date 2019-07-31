@@ -69,6 +69,28 @@ $router->mount('/ark', function () use ($router, $arkController) {
 		}
 		echo json_encode($response);
 	});
+	$router->get('/upgrade/(\d+)', function ($id) use ($arkController) {
+		$response = $arkController->upgradeArk($id, $_GET);
+
+		if ($response['status'] === "success") {
+			http_response_code(200);
+		}
+		else if ($response['status'] === "failed") {
+			http_response_code(400);
+		}
+		echo json_encode($response);
+	});
+	$router->post('/(\d+)/uploadBanner', function ($id) use ($arkController) {
+		$response = $arkController->uploadBanner($_FILES);
+
+		if ($response['status'] === "success") {
+			http_response_code(200);
+		}
+		else if ($response['status'] === "failed") {
+			http_response_code(400);
+		}
+		echo json_encode($response);
+	});
 });
 
 $router->get('/arks', function () use ($arkController) {
