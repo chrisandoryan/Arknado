@@ -140,8 +140,41 @@ class ArkController
      *     ),
      * )
      * */
-    public function uploadBanner()
-    { }
+    public function uploadBanner($id, $files)
+    { 
+        $arkid = $id;
+        $banner = $files['arkbanner'];
+
+        $banner_name = $banner['name'];
+        $banner_tmploc = $banner['tmp_name'];
+
+        if (move_uploaded_file($banner_tmploc, __DIR__ . "/../../public/images/$banner_name")) {
+            $query = "UPDATE arks SET banner_name = '$banner_name' WHERE id = $arkid;";
+            if ($this->conn->query($query) === TRUE) {
+                $response = [
+                    "status" => "success",
+                    "message" => "OK",
+                    "banner_name" => $banner_name
+                ];
+            }
+            else {
+                $response = [
+                    "status" => "failed",
+                    "message" => "Failed to update Ark banner path",
+                    "trace" => $this->conn->error
+                ];
+            }
+        }
+        else {
+            $response = [
+                "status" => "failed",
+                "message" => "Failed to upload Ark banner",
+            ];
+        }
+
+        return $response;
+        
+    }
 
     /**
      * @OA\Get(

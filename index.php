@@ -81,7 +81,7 @@ $router->mount('/ark', function () use ($router, $arkController) {
 		echo json_encode($response);
 	});
 	$router->post('/(\d+)/uploadBanner', function ($id) use ($arkController) {
-		$response = $arkController->uploadBanner($_FILES);
+		$response = $arkController->uploadBanner($id, $_FILES);
 
 		if ($response['status'] === "success") {
 			http_response_code(200);
