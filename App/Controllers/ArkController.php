@@ -77,7 +77,7 @@ class ArkController
         $hitpoint = $data['hitpoint'];
         $skill = $data['skill'];
 
-        $query = "INSERT INTO arks VALUES (DEFAULT, $userid, '$ark_name', $attack, $hitpoint, '$skill');";
+        $query = "INSERT INTO arks VALUES (DEFAULT, $userid, '$ark_name', $attack, $hitpoint, '$skill', NULL);";
 
         if ($this->conn->query($query) === TRUE) {
             $response = [
